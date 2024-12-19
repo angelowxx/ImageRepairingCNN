@@ -13,9 +13,10 @@ from tqdm import tqdm
 from libs.utils import ImageDatasetWithTransforms
 from libs.image_transformers import *
 from libs.model import ImageRepairingCNN
+from variables import *
 
 
-def train_model(image_folder_path='D:\\python\\Animal Classification\\data\\raw-img\\cane'):
+def train_model(image_folder_path=kaggle_data_path):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f"Using device: {device}")
 
