@@ -53,9 +53,8 @@ class CustomLoss(nn.Module):
     def forward(self, original, transformed):
         # Compute the L1 loss and the smoothness (TV loss)
         comparison_loss = self.image_comparison_loss(original, transformed)
-        smoothness_loss_original = self.total_variation_loss(original)
         smoothness_loss_transformed = self.total_variation_loss(transformed)
-        smoothness_loss = smoothness_loss_transformed - smoothness_loss_original
+        smoothness_loss = smoothness_loss_transformed
 
         # Total loss = comparison loss + smoothness regularization
         total_loss = comparison_loss + self.lambda_smooth * smoothness_loss
