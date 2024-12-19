@@ -92,7 +92,6 @@ def train(model=None, train_data=None, test_data=None, criterion=None, device=No
 
         save_model_str = os.path.join(model_save_dir, 'image_repairing_model')
         torch.save(model.state_dict(), save_model_str)
-        break
 
 
 
