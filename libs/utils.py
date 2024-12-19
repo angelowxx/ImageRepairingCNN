@@ -40,7 +40,7 @@ class CustomLoss(nn.Module):
 
     def image_comparison_loss(self, original, transformed):
         # L1 loss (Mean Absolute Error) between original and transformed images
-        return torch.mean(torch.abs(original - transformed))
+        return torch.mean(torch.abs(original - transformed)) * 10
 
     def total_variation_loss(self, image):
         # Total Variation Loss (Smoothness penalty)
@@ -53,8 +53,7 @@ class CustomLoss(nn.Module):
     def forward(self, original, transformed):
         # Compute the L1 loss and the smoothness (TV loss)
         comparison_loss = self.image_comparison_loss(original, transformed)
-        smoothness_loss_transformed = self.total_variation_loss(transformed)
-        smoothness_loss = smoothness_loss_transformed
+        smoothness_loss = self.total_variation_loss(transformed)
 
         # Total loss = comparison loss + smoothness regularization
         total_loss = comparison_loss + self.lambda_smooth * smoothness_loss
