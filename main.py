@@ -8,9 +8,10 @@ from libs.image_transformers import normalize_img_size, downward_img_quality
 from libs.training import train_model, eval_fn
 from libs.utils import ImageDatasetWithTransforms, CustomLoss
 from libs.model import ImageRepairingCNN
+from libs.variables import *
 
 
-def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\raw-img\\cane'):
+def evaluate_model(image_folder_path=test_data_path):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f"Using device: {device}")
     model_save_dir = os.path.join(os.getcwd(), 'models', 'image_repairing_model')

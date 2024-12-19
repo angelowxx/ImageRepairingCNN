@@ -44,10 +44,10 @@ class CustomLoss(nn.Module):
 
     def total_variation_loss(self, image):
         # Total Variation Loss (Smoothness penalty)
-        diff_i = image[:, :, 1:] - image[:, :, :-1]  # Horizontal difference
-        diff_j = image[:, 1:, :] - image[:, :-1, :]  # Vertical difference
+        diff_i = image[:, :, :, 1:] - image[:, :, :, :-1]  # Horizontal difference
+        diff_j = image[:, :, 1:, :] - image[:, :, :-1, :]  # Vertical difference
         b, c, h, w = image.shape
-        tv_loss = torch.sum(torch.abs(diff_i)) + torch.sum(torch.abs(diff_j))/(b*c*h*w)
+        tv_loss = (torch.sum(torch.abs(diff_i)) + torch.sum(torch.abs(diff_j)))/(b*c*h*w)
         return tv_loss
 
     def forward(self, original, transformed):
@@ -55,7 +55,7 @@ class CustomLoss(nn.Module):
         comparison_loss = self.image_comparison_loss(original, transformed)
         smoothness_loss_original = self.total_variation_loss(original)
         smoothness_loss_transformed = self.total_variation_loss(transformed)
-        smoothness_loss = torch.abs(smoothness_loss_original - smoothness_loss_transformed) / smoothness_loss_original
+        smoothness_loss = smoothness_loss_transformed - smoothness_loss_original
 
         # Total loss = comparison loss + smoothness regularization
         total_loss = comparison_loss + self.lambda_smooth * smoothness_loss
