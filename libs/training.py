@@ -16,7 +16,7 @@ from libs.model import ImageRepairingCNN
 from libs.variables import *
 
 
-def train_model(image_folder_path=kaggle_data_path, continue_training=True):
+def train_model(image_folder_path=kaggle_data_path):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f"Using device: {device}")
 
@@ -39,11 +39,6 @@ def train_model(image_folder_path=kaggle_data_path, continue_training=True):
 
     model = ImageRepairingCNN(input_shape=input_shape).to(device)
 
-    if continue_training:
-        model.load_state_dict(torch.load(os.path.join(save_model_str),
-                                         map_location=torch.device('cpu')))
-        model = model.to(device)
-
     summary(model, input_shape,
             device='cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -56,7 +51,7 @@ def train_model(image_folder_path=kaggle_data_path, continue_training=True):
     return model
 
 
-def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=16, folds=10,
+def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=10, folds=10,
           num_epochs=10):
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
@@ -87,7 +82,7 @@ def train(model=None, train_data=None, test_data=None, criterion=None, device=No
 
             train_loss = train_fn(model, optimizer, criterion, train_loader, val_loader, device)
 
-            eval_loss = eval_fn(model=model, criterion=criterion, test_loader=val_loader, device=device, display=True)
+            # eval_loss = eval_fn(model=model, criterion=criterion, test_loader=val_loader, device=device, display=False)
 
             scheduler.step()
 
@@ -135,20 +130,19 @@ def train_fn(model, optimizer, criterion, train_loader, val_loader, device, disp
         t.set_description('(=> Training) Loss: {:.4f}'.format(sum_loss/n))
 
         if display:
-            original_image = original_images[length-1]
-            repaired_image = repaired_images[length-1]
             # Create a figure with two subplots
             fig, axes = plt.subplots(1, 2, figsize=(12, 5))  # 1 row, 2 columns
 
             # Plot the first image
-            axes[0].imshow(reverse_transform(original_image))
+            axes[0].imshow(reverse_transform(original_images[length-1]))
             axes[0].set_title("original_image")
             axes[0].axis("off")  # Turn off axes
 
             # Plot the second image
-            axes[1].imshow(reverse_transform(repaired_image))
+            axes[1].imshow(reverse_transform(repaired_images[length-1]))
             axes[1].set_title("repaired_image")
             axes[1].axis("off")  # Turn off axes
+
 
             # Adjust layout and show the plot
             plt.tight_layout()
@@ -194,26 +188,19 @@ def eval_fn(model, criterion, test_loader, device, display=False):
         t.set_description('(=> Training) Loss: {:.4f}'.format(sum_loss/n))
 
         if display:
-            original_image = original_images[length-1]
-            transformed_image = transformed_images[length-1]
-            repaired_image = repaired_images[length-1]
             # Create a figure with two subplots
-            fig, axes = plt.subplots(1, 3, figsize=(12, 5))  # 1 row, 2 columns
+            fig, axes = plt.subplots(1, 2, figsize=(12, 5))  # 1 row, 2 columns
 
             # Plot the first image
-            axes[0].imshow(reverse_transform(original_image))
+            axes[0].imshow(reverse_transform(original_images[length-1]))
             axes[0].set_title("original_image")
             axes[0].axis("off")  # Turn off axes
 
             # Plot the second image
-            axes[1].imshow(reverse_transform(transformed_image))
-            axes[1].set_title("transformed_image")
+            axes[1].imshow(reverse_transform(repaired_images[length-1]))
+            axes[1].set_title("repaired_image")
             axes[1].axis("off")  # Turn off axes
 
-            # Plot the second image
-            axes[2].imshow(reverse_transform(repaired_image))
-            axes[2].set_title("repaired_image")
-            axes[2].axis("off")  # Turn off axes
 
             # Adjust layout and show the plot
             plt.tight_layout()
