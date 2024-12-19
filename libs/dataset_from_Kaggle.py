@@ -17,7 +17,7 @@ path = repr(path)
 print("Path to dataset files:", path)
 
 # Path to the .py file
-file_path = os.path.join(os.getcwd(), 'variables', 'variables.py')
+file_path = os.path.join(os.getcwd(), 'libs', 'variables.py')
 
 
 # Read the original file
