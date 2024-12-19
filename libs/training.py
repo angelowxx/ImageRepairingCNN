@@ -7,6 +7,7 @@ import numpy as np
 import torch.nn
 from sklearn.model_selection import KFold
 from torch.utils.data import random_split, DataLoader, Subset
+from torchsummary import summary
 from tqdm import tqdm
 
 from libs.utils import ImageDatasetWithTransforms
@@ -33,8 +34,13 @@ def train_model(image_folder_path='D:\\python\\Animal Classification\\data\\raw-
     train_data, test_data = random_split(dataset, [train_size, test_size])
 
     channels, img_height, img_width = train_data[0][0].shape
+    input_shape = (channels, img_height, img_width)
 
-    model = ImageRepairingCNN(input_shape=(channels, img_height, img_width)).to(device)
+    model = ImageRepairingCNN(input_shape=input_shape).to(device)
+
+    summary(model, input_shape,
+            device='cuda' if torch.cuda.is_available() else 'cpu')
+
     criterion = torch.nn.MSELoss().to(device)
 
     train(model=model, train_data=train_data, test_data=test_data, criterion=criterion, device=device)
