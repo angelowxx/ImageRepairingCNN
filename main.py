@@ -33,8 +33,8 @@ def evaluate_model(image_folder_path=test_data_path):
 if __name__ == '__main__':
   log_lvl = logging.INFO
   logging.basicConfig(level=log_lvl)
-  # model = train_model()
-  evaluate_model()
+  model = train_model()
+  # evaluate_model()
   print()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
