@@ -13,7 +13,7 @@ from tqdm import tqdm
 from libs.utils import ImageDatasetWithTransforms
 from libs.image_transformers import *
 from libs.model import ImageRepairingCNN
-from variables import *
+from libs.variables import *
 
 
 def train_model(image_folder_path=kaggle_data_path):
@@ -42,7 +42,7 @@ def train_model(image_folder_path=kaggle_data_path):
     summary(model, input_shape,
             device='cuda' if torch.cuda.is_available() else 'cpu')
 
-    criterion = torch.nn.MSELoss().to(device)
+    criterion = torch.nn.L1Loss().to(device)
 
     train(model=model, train_data=train_data, test_data=test_data, criterion=criterion, device=device)
 
@@ -51,13 +51,13 @@ def train_model(image_folder_path=kaggle_data_path):
     return model
 
 
-def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=64, folds=5,
-          num_epochs=15):
+def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=16, folds=5,
+          num_epochs=10):
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
     kfold = KFold(n_splits=folds, shuffle=True, random_state=42)
 
-    lr = 0.01
+    lr = 0.005
 
     for fold, (train_idx, val_idx) in enumerate(kfold.split(train_data)):
 
@@ -82,9 +82,17 @@ def train(model=None, train_data=None, test_data=None, criterion=None, device=No
 
             train_loss = train_fn(model, optimizer, criterion, train_loader, val_loader, device)
 
-            eval_loss = eval_fn(model=model, criterion=criterion, test_loader=val_loader, device=device, display=False)
+            # eval_loss = eval_fn(model=model, criterion=criterion, test_loader=val_loader, device=device, display=False)
 
             scheduler.step()
+
+        model_save_dir = os.path.join(os.getcwd(), 'models')
+        if not os.path.exists(model_save_dir):
+            os.mkdir(model_save_dir)
+
+        save_model_str = os.path.join(model_save_dir, 'image_repairing_model')
+        torch.save(model.state_dict(), save_model_str)
+        break
 
 
 
@@ -112,7 +120,7 @@ def train_fn(model, optimizer, criterion, train_loader, val_loader, device):
         optimizer.zero_grad()
         repaired_images = model(transformed_images)
         loss = criterion(original_images, repaired_images)
-        loss *= 10
+        loss *= 100
         loss.backward()
         optimizer.step()
 
@@ -153,7 +161,7 @@ def eval_fn(model, criterion, test_loader, device, display=False):
 
         repaired_images = model(original_images)
         loss = criterion(original_images, repaired_images)
-        loss *= 10
+        loss *= 100
 
         sum_loss += loss
         length = repaired_images.size(0)

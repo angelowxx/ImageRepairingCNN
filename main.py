@@ -14,7 +14,7 @@ def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\r
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f"Using device: {device}")
     model_save_dir = os.path.join(os.getcwd(), 'models', 'image_repairing_model')
-    criterion = torch.nn.MSELoss().to(device)
+    criterion = torch.nn.L1Loss().to(device)
     dataset = ImageDatasetWithTransforms(image_folder_path, normalize_img_size, downward_img_quality)
     test_loader = DataLoader(dataset, batch_size=16, shuffle=False)
 
@@ -30,8 +30,10 @@ def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\r
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    model = train_model()
-    # evaluate_model()
-    print()
+  log_lvl = logging.INFO
+  logging.basicConfig(level=log_lvl)
+  model = train_model()
+  # evaluate_model()
+  print()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
