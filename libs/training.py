@@ -51,7 +51,7 @@ def train_model(image_folder_path=kaggle_data_path):
     return model
 
 
-def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=16, folds=5,
+def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=16, folds=10,
           num_epochs=10):
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
