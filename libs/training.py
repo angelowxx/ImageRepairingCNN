@@ -10,7 +10,7 @@ from torch.utils.data import random_split, DataLoader, Subset
 from torchsummary import summary
 from tqdm import tqdm
 
-from libs.utils import ImageDatasetWithTransforms
+from libs.utils import ImageDatasetWithTransforms, CustomLoss
 from libs.image_transformers import *
 from libs.model import ImageRepairingCNN
 from libs.variables import *
@@ -42,7 +42,7 @@ def train_model(image_folder_path=kaggle_data_path):
     summary(model, input_shape,
             device='cuda' if torch.cuda.is_available() else 'cpu')
 
-    criterion = torch.nn.L1Loss().to(device)
+    criterion = CustomLoss(lambda_smooth=0.1).to(device)
 
     train(model=model, train_data=train_data, test_data=test_data, criterion=criterion, device=device)
 
@@ -96,7 +96,7 @@ def train(model=None, train_data=None, test_data=None, criterion=None, device=No
 
 
 
-def train_fn(model, optimizer, criterion, train_loader, val_loader, device):
+def train_fn(model, optimizer, criterion, train_loader, val_loader, device, display=False):
     """
   Training method
   :param model: model to train
@@ -130,6 +130,25 @@ def train_fn(model, optimizer, criterion, train_loader, val_loader, device):
 
         t.set_description('(=> Training) Loss: {:.4f}'.format(sum_loss/n))
 
+        if display:
+            # Create a figure with two subplots
+            fig, axes = plt.subplots(1, 2, figsize=(12, 5))  # 1 row, 2 columns
+
+            # Plot the first image
+            axes[0].imshow(reverse_transform(original_images[length-1]))
+            axes[0].set_title("original_image")
+            axes[0].axis("off")  # Turn off axes
+
+            # Plot the second image
+            axes[1].imshow(reverse_transform(repaired_images[length-1]))
+            axes[1].set_title("repaired_image")
+            axes[1].axis("off")  # Turn off axes
+
+
+            # Adjust layout and show the plot
+            plt.tight_layout()
+            plt.show()
+
 
 
     time_train += time.time() - time_begin
@@ -159,7 +178,7 @@ def eval_fn(model, criterion, test_loader, device, display=False):
         original_images = original_images.to(device)
         transformed_images = transformed_images.to(device)
 
-        repaired_images = model(original_images)
+        repaired_images = model(transformed_images)
         loss = criterion(original_images, repaired_images)
         loss *= 100
 
@@ -174,13 +193,13 @@ def eval_fn(model, criterion, test_loader, device, display=False):
             fig, axes = plt.subplots(1, 2, figsize=(12, 5))  # 1 row, 2 columns
 
             # Plot the first image
-            axes[0].imshow(reverse_transform(transformed_images[length-1]))
+            axes[0].imshow(reverse_transform(original_images[length-1]))
             axes[0].set_title("original_image")
             axes[0].axis("off")  # Turn off axes
 
             # Plot the second image
             axes[1].imshow(reverse_transform(repaired_images[length-1]))
-            axes[1].set_title("transformed_image")
+            axes[1].set_title("repaired_image")
             axes[1].axis("off")  # Turn off axes
 
 

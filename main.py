@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 
 from libs.image_transformers import normalize_img_size, downward_img_quality
 from libs.training import train_model, eval_fn
-from libs.utils import ImageDatasetWithTransforms
+from libs.utils import ImageDatasetWithTransforms, CustomLoss
 from libs.model import ImageRepairingCNN
 
 
@@ -14,7 +14,7 @@ def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\r
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f"Using device: {device}")
     model_save_dir = os.path.join(os.getcwd(), 'models', 'image_repairing_model')
-    criterion = torch.nn.L1Loss().to(device)
+    criterion = CustomLoss(lambda_smooth=0.1).to(device)
     dataset = ImageDatasetWithTransforms(image_folder_path, normalize_img_size, downward_img_quality)
     test_loader = DataLoader(dataset, batch_size=16, shuffle=False)
 
@@ -23,7 +23,7 @@ def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\r
 
     model = ImageRepairingCNN(input_shape=input_shape).to(device)
 
-    model.load_state_dict(torch.load(os.path.join(os.getcwd(), 'models', "image_repairing_model")))
+    model.load_state_dict(torch.load(os.path.join(os.getcwd(), 'models', "image_repairing_model"), map_location=torch.device('cpu')))
 
     test_loss = eval_fn(model=model, criterion=criterion, test_loader=test_loader, device=device, display=True)
 
@@ -32,8 +32,8 @@ def evaluate_model(image_folder_path='D:\\python\\Animal Classification\\data\\r
 if __name__ == '__main__':
   log_lvl = logging.INFO
   logging.basicConfig(level=log_lvl)
-  model = train_model()
-  # evaluate_model()
+  #model = train_model()
+  evaluate_model()
   print()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
