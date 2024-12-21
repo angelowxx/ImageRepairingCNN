@@ -44,6 +44,7 @@ def train_model(continue_training=True):
 
     if continue_training and os.path.exists(save_model_str):
         model.load_state_dict(torch.load(save_model_str))
+        logging.info(f'model loaded from {save_model_str}!!')
         model = model.to(device)
 
     summary(model, input_shape,
