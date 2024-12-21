@@ -37,7 +37,7 @@ class ImageDatasetWithTransforms(Dataset):
 
 
 class CustomLoss(nn.Module):
-    def __init__(self, lambda_smooth=1):
+    def __init__(self, lambda_smooth=0.5):
         super(CustomLoss, self).__init__()
         self.lambda_smooth = lambda_smooth  # Smoothness weight
         # Define Sobel edge-detection kernels

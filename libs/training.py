@@ -17,7 +17,7 @@ from libs.model import ImageRepairingCNN
 from libs.variables import *
 
 
-def train_model(continue_training=True):
+def train_model(continue_training=False):
     image_folder_path = os.path.join(os.getcwd(), 'data', 'split_images')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -60,7 +60,7 @@ def train_model(continue_training=True):
 
 
 def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=256, folds=5,
-          num_epochs=15):
+          num_epochs=5):
     model_save_dir = os.path.join(os.getcwd(), 'models')
     if not os.path.exists(model_save_dir):
         os.mkdir(model_save_dir)
