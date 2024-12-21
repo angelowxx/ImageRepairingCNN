@@ -21,15 +21,15 @@ file_path = os.path.join(os.getcwd(), 'libs', 'variables.py')
 
 
 # Read the original file
-with open(file_path, "r") as file:
-    content = file.read()
+# with open(file_path, "r") as file:
+#     content = file.read()
 
 # Update the variable value using regex
 # Matches: variable_name = <any value>
-updated_content = re.sub(r"kaggle_data_path\s*=\s*.*", r"kaggle_data_path = r{}".format(path), content)
+# updated_content = re.sub(r"kaggle_data_path\s*=\s*.*", r"kaggle_data_path = r{}".format(path), content)
 
 # Write the updated content back to the file
-with open(file_path, "w") as file:
-    file.write(updated_content)
+# with open(file_path, "w") as file:
+    #file.write(updated_content)
 
-print(f"Updated 'variable_name' in {file_path} to {path}!")
+# print(f"Updated 'variable_name' in {file_path} to {path}!")

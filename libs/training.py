@@ -61,7 +61,8 @@ def train_model(continue_training=False):
 
 def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=256, folds=5,
           num_epochs=5):
-    model_save_dir = os.path.join(os.getcwd(), 'models')
+    # model_save_dir = os.path.join(os.getcwd(), 'models')
+    model_save_dir = kaggle_data_path
     if not os.path.exists(model_save_dir):
         os.mkdir(model_save_dir)
 
