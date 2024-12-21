@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     frame_interval = 30  # Extract one frame every 30 frames (adjust as needed)
 
-    # extract_frames_from_videos(videos_save_path, train_data_path, frame_interval)
+    extract_frames_from_videos(videos_save_path, train_data_path, frame_interval)
 
     split_images_path = os.path.join(os.getcwd(), 'data', 'split_images')
 

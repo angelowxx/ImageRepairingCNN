@@ -41,19 +41,24 @@ class CustomLoss(nn.Module):
         super(CustomLoss, self).__init__()
         self.lambda_smooth = lambda_smooth  # Smoothness weight
         # Define Sobel edge-detection kernels
-        self.sobel_x = torch.tensor([[-1, 0, 1],
+        sobel_x = torch.tensor([[-1, 0, 1],
                                      [-2, 0, 2],
                                      [-1, 0, 1]], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
 
-        self.sobel_y = torch.tensor([[-1, -2, -1],
+        sobel_y = torch.tensor([[-1, -2, -1],
                                      [0, 0, 0],
                                      [1, 2, 1]], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
 
-        self.mean_kernel = torch.tensor([[1/25, 1/25, 1/25, 1/25, 1/25],
+        mean_kernel = torch.tensor([[1/25, 1/25, 1/25, 1/25, 1/25],
                                          [1/25, 1/10, 1/10, 1/10, 1/25],
                                          [1/25, 1/10, 1/5, 1/10, 1/25],
                                          [1/25, 1/10, 1/10, 1/10, 1/25],
-                                         [1/25, 1/25, 1/25, 1/25, 1/25],], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+                                         [1/25, 1/25, 1/25, 1/25, 1/25]], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+
+        self.register_buffer('sobel_x', sobel_x)
+        self.register_buffer('sobel_y', sobel_y)
+        self.register_buffer('mean_kernel', mean_kernel)
+
         self.edge_mask = None
 
     def edge_comparison_loss(self, original, transformed):
@@ -101,14 +106,14 @@ class CustomLoss(nn.Module):
         # Total Variation Loss (Smoothness penalty)
         diff_i_r = image[:, :, :, 1:] - image[:, :, :, :-1]  # Horizontal difference
         diff_i_l = image[:, :, :, :-1] - image[:, :, :, 1:]  # Horizontal difference
-        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), diff_i_r.size(2), 1))
+        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), diff_i_r.size(2), 1)).to(image.deive)
         diff_i_r = torch.cat((zeros, diff_i_r), dim=3)
         diff_i_l = torch.cat((diff_i_l, zeros), dim=3)
         diff_i = (diff_i_r + diff_i_l) / 2
 
         diff_j_u = image[:, :, :-1, :] - image[:, :, 1:, :]  # Vertical difference
         diff_j_b = image[:, :, 1:, :] - image[:, :, :-1, :]  # Vertical difference
-        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), 1, diff_j_u.size(3)))
+        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), 1, diff_j_u.size(3))).to(image.deive)
         diff_j_u = torch.cat((diff_j_u, zeros), dim=2)
         diff_j_b = torch.cat((zeros, diff_j_b), dim=2)
         diff_j = (diff_j_u + diff_j_b) / 2
