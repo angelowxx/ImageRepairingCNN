@@ -3,7 +3,7 @@ from torchvision.transforms import transforms
 from libs.variables import *
 
 downward_img_quality = transforms.Compose([
-    transforms.Resize((clip_height//4, clip_width//4)),
+    transforms.Resize((clip_height//3, clip_width//3)),
     transforms.Resize((clip_height, clip_width)),
     transforms.ToTensor(),
     # transforms.Lambda(lambda img: torch.clamp(img + torch.randn_like(img) * 0.05, 0, 1))

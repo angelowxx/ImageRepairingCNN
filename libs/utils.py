@@ -106,14 +106,14 @@ class CustomLoss(nn.Module):
         # Total Variation Loss (Smoothness penalty)
         diff_i_r = image[:, :, :, 1:] - image[:, :, :, :-1]  # Horizontal difference
         diff_i_l = image[:, :, :, :-1] - image[:, :, :, 1:]  # Horizontal difference
-        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), diff_i_r.size(2), 1)).to(image.deive)
+        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), diff_i_r.size(2), 1)).to(image.device)
         diff_i_r = torch.cat((zeros, diff_i_r), dim=3)
         diff_i_l = torch.cat((diff_i_l, zeros), dim=3)
         diff_i = (diff_i_r + diff_i_l) / 2
 
         diff_j_u = image[:, :, :-1, :] - image[:, :, 1:, :]  # Vertical difference
         diff_j_b = image[:, :, 1:, :] - image[:, :, :-1, :]  # Vertical difference
-        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), 1, diff_j_u.size(3))).to(image.deive)
+        zeros = torch.zeros((diff_i_r.size(0), diff_i_r.size(1), 1, diff_j_u.size(3))).to(image.device)
         diff_j_u = torch.cat((diff_j_u, zeros), dim=2)
         diff_j_b = torch.cat((zeros, diff_j_b), dim=2)
         diff_j = (diff_j_u + diff_j_b) / 2

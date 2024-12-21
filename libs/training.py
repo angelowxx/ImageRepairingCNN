@@ -17,7 +17,7 @@ from libs.model import ImageRepairingCNN
 from libs.variables import *
 
 
-def train_model(continue_training=False):
+def train_model(continue_training=True):
     image_folder_path = os.path.join(os.getcwd(), 'data', 'split_images')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -31,7 +31,7 @@ def train_model(continue_training=False):
 
     dataset = ImageDatasetWithTransforms(image_folder_path, normalize_img_size, downward_img_quality)
 
-    train_size = int(0.1 * len(dataset))
+    train_size = int(0.8 * len(dataset))
     test_size = len(dataset) - train_size
 
     # Split the dataset
@@ -42,9 +42,8 @@ def train_model(continue_training=False):
 
     model = ImageRepairingCNN(input_shape=input_shape).to(device)
 
-    if continue_training:
-        model.load_state_dict(torch.load(os.path.join(os.getcwd(), 'models', "image_repairing_model"),
-                                         map_location=torch.device('cpu')))
+    if continue_training and os.path.exists(save_model_str):
+        model.load_state_dict(torch.load(save_model_str))
         model = model.to(device)
 
     summary(model, input_shape,
@@ -59,10 +58,9 @@ def train_model(continue_training=False):
     return model
 
 
-def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=256, folds=5,
-          num_epochs=5):
-    # model_save_dir = os.path.join(os.getcwd(), 'models')
-    model_save_dir = kaggle_data_path
+def train(model=None, train_data=None, test_data=None, criterion=None, device=None, batch_size=512, folds=5,
+          num_epochs=10):
+    model_save_dir = os.path.join(os.getcwd(), 'models')
     if not os.path.exists(model_save_dir):
         os.mkdir(model_save_dir)
 

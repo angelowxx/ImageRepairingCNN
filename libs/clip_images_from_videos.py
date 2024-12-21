@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # Example usage
     train_data_path = os.path.join(os.getcwd(), 'data', 'original_train_images')
 
-    frame_interval = 30  # Extract one frame every 30 frames (adjust as needed)
+    frame_interval = 60  # Extract one frame every 30 frames (adjust as needed)
 
     extract_frames_from_videos(videos_save_path, train_data_path, frame_interval)
 
