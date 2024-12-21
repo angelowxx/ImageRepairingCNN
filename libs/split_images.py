@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 
-from libs.variables import kaggle_data_path
+from libs.variables import *
 
 
 def split_images_into_parts(source_folder, output_folder, w, h):
@@ -48,4 +48,4 @@ if __name__ == '__main__':
     source_folder = kaggle_data_path  # Replace with the path to your folder with images
     # output_folder = os.path.join(os.path.dirname(source_folder), "split_images")  # Creates a sibling folder
     output_folder = os.path.join(os.getcwd(), 'models')
-    split_images_into_parts(source_folder, output_folder)
+    split_images_into_parts(source_folder, output_folder, clip_width, clip_height)
